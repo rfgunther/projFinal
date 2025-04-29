@@ -31,7 +31,10 @@ public class App {
             System.out.println("1 - Cadastrar novo usuário");
             System.out.println("2 - Cadastrar novo evento");
             System.out.println("3 - Listar eventos cadastrados");
-            System.out.println("4 - Sair");
+            System.out.println("4 - Confirmar participação em evento");
+            System.out.println("5 - Sair");
+
+
             System.out.print("Escolha uma opção: ");
 
             int opcao = Integer.parseInt(sc.nextLine());
@@ -47,11 +50,15 @@ public class App {
                     listarEventos(eventos);
                     break;
                 case 4:
+                    confirmarParticipacao(sc, usuarios, eventos);
+                    break;
+                case 5:
                     running = false;
                     System.out.println("Encerrando o sistema. Até logo!");
                     break;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
+
             }
         }
 
@@ -124,4 +131,39 @@ public class App {
             }
         }
     }
+    private static void confirmarParticipacao(Scanner sc, List<Usuario> usuarios, List<Evento> eventos) {
+        if (usuarios.isEmpty()) {
+            System.out.println("Nenhum usuário cadastrado.");
+            return;
+        }
+
+        if (eventos.isEmpty()) {
+            System.out.println("Nenhum evento cadastrado.");
+            return;
+        }
+
+        System.out.println("\n=== Usuários Cadastrados ===");
+        for (int i = 0; i < usuarios.size(); i++) {
+            System.out.println(i + " - " + usuarios.get(i).nome);
+        }
+
+        System.out.print("Escolha o número do usuário: ");
+        int indiceUsuario = Integer.parseInt(sc.nextLine());
+        Usuario usuarioSelecionado = usuarios.get(indiceUsuario);
+
+        System.out.println("\n=== Eventos Disponíveis ===");
+        for (int i = 0; i < eventos.size(); i++) {
+            System.out.println(i + " - " + eventos.get(i).nome + " em " + eventos.get(i).horario);
+        }
+
+        System.out.print("Escolha o número do evento: ");
+        int indiceEvento = Integer.parseInt(sc.nextLine());
+        Evento eventoSelecionado = eventos.get(indiceEvento);
+
+        // Adiciona o usuário à lista de participantes do evento
+        eventoSelecionado.participantes.add(usuarioSelecionado);
+
+        System.out.println(usuarioSelecionado.nome + " foi confirmado(a) no evento " + eventoSelecionado.nome + "!");
+    }
+
 }
