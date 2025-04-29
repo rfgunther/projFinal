@@ -12,6 +12,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
+
 
 public class App {
     public static void main(String[] args) {
@@ -30,8 +32,13 @@ public class App {
             System.out.println("4 - Confirmar participação em evento");
             System.out.println("5 - Sair");
             System.out.println("6 - Listar eventos confirmados de um usuário");
+            System.out.println("7 - Cancelar participação em evento");
+            System.out.println("8 - Ver eventos em andamento");
+            System.out.println("9 - Ver eventos que já ocorreram");
+
 
             System.out.print("Escolha uma opção: ");
+
             int opcao = Integer.parseInt(sc.nextLine());
 
             switch (opcao) {
@@ -54,8 +61,20 @@ public class App {
                 case 6:
                     listarEventosConfirmadosUsuario(sc, usuarios, eventos);
                     break;
+                case 7:
+                    cancelarParticipacao(sc, usuarios, eventos);
+                    break;
+                case 8:
+                    listarEventosEmAndamento(eventos);
+                    break;
+                case 9:
+                    listarEventosPassados(eventos);
+                    break;
+
+
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
+
             }
         }
 
@@ -118,19 +137,23 @@ public class App {
     private static void listarEventos(List<Evento> eventos) {
         if (eventos.isEmpty()) {
             System.out.println("Nenhum evento cadastrado.");
-        } else {
-            System.out.println("\n=== Eventos Cadastrados ===");
-            for (Evento e : eventos) {
-                System.out.println("-------------------------");
-                System.out.println("Nome: " + e.nome);
-                System.out.println("Endereço: " + e.endereco);
-                System.out.println("Descrição: " + e.descricao);
-                System.out.println("Tipo: " + e.tipo);
-                System.out.println("Horário: " + e.horario);
-                System.out.println("Participantes confirmados: " + e.participantes.size());
-            }
+            return;
+        }
+        eventos.sort(Comparator.comparing(e -> e.horario));
+
+        System.out.println("\n=== Eventos Cadastrados ===");
+
+        for (Evento e : eventos) {
+            System.out.println("-------------------------");
+            System.out.println("Nome: " + e.nome);
+            System.out.println("Endereço: " + e.endereco);
+            System.out.println("Descrição: " + e.descricao);
+            System.out.println("Tipo: " + e.tipo);
+            System.out.println("Horário: " + e.horario);
+            System.out.println("Participantes confirmados: " + e.participantes.size());
         }
     }
+
 
     private static void confirmarParticipacao(Scanner sc, List<Usuario> usuarios, List<Evento> eventos) {
         if (usuarios.isEmpty()) {
@@ -181,6 +204,7 @@ public class App {
         eventoSelecionado.participantes.add(usuarioSelecionado);
         System.out.println(usuarioSelecionado.nome + " foi confirmado(a) no evento " + eventoSelecionado.nome + "!");
     }
+
     private static void listarEventosConfirmadosUsuario(Scanner sc, List<Usuario> usuarios, List<Evento> eventos) {
         if (usuarios.isEmpty()) {
             System.out.println("Nenhum usuário cadastrado.");
@@ -217,4 +241,109 @@ public class App {
             System.out.println("Este usuário não está confirmado em nenhum evento.");
         }
     }
+
+    private static void cancelarParticipacao(Scanner sc, List<Usuario> usuarios, List<Evento> eventos) {
+        if (usuarios.isEmpty()) {
+            System.out.println("Nenhum usuário cadastrado.");
+            return;
+        }
+
+        System.out.println("\n=== Usuários Cadastrados ===");
+        for (int i = 0; i < usuarios.size(); i++) {
+            System.out.println(i + " - " + usuarios.get(i).nome);
+        }
+
+        System.out.print("Usuário (número): ");
+        int indiceUsuario = Integer.parseInt(sc.nextLine());
+
+        if (indiceUsuario < 0 || indiceUsuario >= usuarios.size()) {
+            System.out.println("Índice de usuário inválido.");
+            return;
+        }
+
+        Usuario usuario = usuarios.get(indiceUsuario);
+
+        // Listar os eventos em que o usuário está confirmado
+        List<Evento> eventosConfirmados = new ArrayList<>();
+        for (Evento e : eventos) {
+            if (e.participantes.contains(usuario)) {
+                eventosConfirmados.add(e);
+            }
+        }
+
+        if (eventosConfirmados.isEmpty()) {
+            System.out.println("Este usuário não está confirmado em nenhum evento.");
+            return;
+        }
+
+        System.out.println("\n=== Eventos confirmados para " + usuario.nome + " ===");
+        for (int i = 0; i < eventosConfirmados.size(); i++) {
+            Evento e = eventosConfirmados.get(i);
+            System.out.println(i + " - " + e.nome + " em " + e.horario);
+        }
+
+        System.out.print("Evento para cancelar participação (número): ");
+        int indiceEvento = Integer.parseInt(sc.nextLine());
+
+        if (indiceEvento < 0 || indiceEvento >= eventosConfirmados.size()) {
+            System.out.println("Índice de evento inválido.");
+            return;
+        }
+
+        Evento eventoSelecionado = eventosConfirmados.get(indiceEvento);
+        eventoSelecionado.participantes.remove(usuario);
+
+        System.out.println("Participação de " + usuario.nome + " removida do evento " + eventoSelecionado.nome + ".");
+    }
+    private static void listarEventosEmAndamento(List<Evento> eventos) {
+        if (eventos.isEmpty()) {
+            System.out.println("Nenhum evento cadastrado.");
+            return;
+        }
+
+        LocalDateTime agora = LocalDateTime.now();
+        boolean encontrou = false;
+
+        System.out.println("\n=== Eventos em andamento ===");
+
+        for (Evento e : eventos) {
+            // Considerando que cada evento dura 2 horas
+            LocalDateTime inicio = e.horario;
+            LocalDateTime fim = e.horario.plusHours(2);
+
+            if (!agora.isBefore(inicio) && !agora.isAfter(fim)) {
+                System.out.println("• " + e.nome + " (das " + inicio + " às " + fim + ")");
+                encontrou = true;
+            }
+        }
+
+        if (!encontrou) {
+            System.out.println("Nenhum evento em andamento agora.");
+        }
+    }
+    private static void listarEventosPassados(List<Evento> eventos) {
+        if (eventos.isEmpty()) {
+            System.out.println("Nenhum evento cadastrado.");
+            return;
+        }
+
+        LocalDateTime agora = LocalDateTime.now();
+        boolean encontrou = false;
+
+        System.out.println("\n=== Eventos que já ocorreram ===");
+
+        for (Evento e : eventos) {
+            if (e.horario.isBefore(agora)) {
+                System.out.println("- " + e.nome + " em " + e.horario);
+                encontrou = true;
+            }
+        }
+
+        if (!encontrou) {
+            System.out.println("Nenhum evento passado foi encontrado.");
+        }
+    }
+
 }
+
+
