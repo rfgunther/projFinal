@@ -5,9 +5,67 @@ package br.unisul.agenda;
 
 
 import br.unisul.agenda.model.Usuario;
+import br.unisul.agenda.model.Evento;
+import br.unisul.agenda.model.TipoEvento;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Usuario usuario = new Usuario();
 
+        System.out.print("Digite o nome: ");
+        usuario.nome = sc.nextLine();
+
+        System.out.print("Digite o email: ");
+        usuario.email = sc.nextLine();
+
+        System.out.print("Digite o telefone: ");
+        usuario.telefone = sc.nextLine();
+
+        System.out.print("Digite o endereço: ");
+        usuario.endereco = sc.nextLine();
+
+        System.out.println("\nUsuário cadastrado:");
+        System.out.println("Nome: " + usuario.nome);
+        System.out.println("Email: " + usuario.email);
+        System.out.println("Telefone: " + usuario.telefone);
+        System.out.println("Endereço: " + usuario.endereco);
+
+        Evento evento = new Evento();
+
+        System.out.print("Digite o nome do evento: ");
+        evento.nome = sc.nextLine();
+
+        System.out.print("Digite o endereço do evento: ");
+        evento.endereco = sc.nextLine();
+
+        System.out.print("Digite a descrição: ");
+        evento.descricao = sc.nextLine();
+
+// Listar opções de categoria (enum)
+        System.out.println("Escolha o tipo de evento:");
+        for (TipoEvento tipo : TipoEvento.values()) {
+            System.out.println("- " + tipo);
+        }
+        evento.tipo = TipoEvento.valueOf(sc.nextLine().toUpperCase());
+
+// Ler data e hora
+        System.out.print("Digite a data e hora do evento (formato: dd/MM/yyyy HH:mm): ");
+        String dataHora = sc.nextLine();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        evento.horario = LocalDateTime.parse(dataHora, formato);
+
+        System.out.println("\nEvento cadastrado:");
+        System.out.println("Nome: " + evento.nome);
+        System.out.println("Endereço: " + evento.endereco);
+        System.out.println("Descrição: " + evento.descricao);
+        System.out.println("Tipo: " + evento.tipo);
+        System.out.println("Horário: " + evento.horario);
+
+
+        sc.close();
     }
 }
