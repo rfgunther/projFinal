@@ -29,6 +29,7 @@ public class App {
             System.out.println("3 - Listar eventos cadastrados");
             System.out.println("4 - Confirmar participação em evento");
             System.out.println("5 - Sair");
+            System.out.println("6 - Listar eventos confirmados de um usuário");
 
             System.out.print("Escolha uma opção: ");
             int opcao = Integer.parseInt(sc.nextLine());
@@ -49,6 +50,9 @@ public class App {
                 case 5:
                     running = false;
                     System.out.println("Encerrando o sistema. Até logo!");
+                    break;
+                case 6:
+                    listarEventosConfirmadosUsuario(sc, usuarios, eventos);
                     break;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
@@ -176,5 +180,41 @@ public class App {
 
         eventoSelecionado.participantes.add(usuarioSelecionado);
         System.out.println(usuarioSelecionado.nome + " foi confirmado(a) no evento " + eventoSelecionado.nome + "!");
+    }
+    private static void listarEventosConfirmadosUsuario(Scanner sc, List<Usuario> usuarios, List<Evento> eventos) {
+        if (usuarios.isEmpty()) {
+            System.out.println("Nenhum usuário cadastrado.");
+            return;
+        }
+
+        System.out.println("\n=== Usuários Cadastrados ===");
+        for (int i = 0; i < usuarios.size(); i++) {
+            System.out.println(i + " - " + usuarios.get(i).nome);
+        }
+
+        System.out.print("Usuário (número): ");
+        int indice = Integer.parseInt(sc.nextLine());
+
+        if (indice < 0 || indice >= usuarios.size()) {
+            System.out.println("Índice de usuário inválido.");
+            return;
+        }
+
+        Usuario selecionado = usuarios.get(indice);
+
+        System.out.println("\n=== Eventos confirmados para " + selecionado.nome + " ===");
+
+        boolean encontrou = false;
+
+        for (Evento e : eventos) {
+            if (e.participantes.contains(selecionado)) {
+                System.out.println("• " + e.nome + " em " + e.horario + " (" + e.tipo + ")");
+                encontrou = true;
+            }
+        }
+
+        if (!encontrou) {
+            System.out.println("Este usuário não está confirmado em nenhum evento.");
+        }
     }
 }
