@@ -3,12 +3,11 @@
  */
 package br.unisul.agenda;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
+import br.unisul.agenda.model.Usuario;
+
+public class App {
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+
     }
 }
