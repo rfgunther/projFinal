@@ -1,16 +1,17 @@
 
 
-```markdown
+
 #  Projeto Final — Sistema de Cadastro e Notificação de Eventos
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Java](https://img.shields.io/badge/Java-17+-red?logo=java&logoColor=white)](https://www.oracle.com/java/)
+[![Gradle](https://img.shields.io/badge/Gradle-8%2B-02303A?logo=gradle)](https://gradle.org/)
 
 Este projeto foi desenvolvido como requisito para aprovação na unidade curricular **Programação de Soluções Computacionais** do curso de **Bacharelado em Ciência da Computação** da **UNISUL**.
 
 ---
-#  Projeto Final — Sistema de Cadastro e Notificação de Eventos
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Java](https://img.shields.io/badge/Java-17+-red?logo=java&logoColor=white)](https://www.oracle.com/java/)
-[![Gradle](https://img.shields.io/badge/Gradle-8%2B-02303A?logo=gradle)](https://gradle.org/)
+
+
 
 
 
