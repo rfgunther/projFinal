@@ -14,13 +14,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+
+
+
 
 public class App {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
         List<Usuario> usuarios = new ArrayList<>();
-        List<Evento> eventos = new ArrayList<>();
+        List<Evento> eventos = carregarEventosDoArquivo();
+
 
         boolean running = true;
 
@@ -132,6 +141,8 @@ public class App {
         eventos.add(evento);
 
         System.out.println("Evento cadastrado com sucesso!");
+        salvarEventosEmArquivo(eventos);
+
     }
 
     private static void listarEventos(List<Evento> eventos) {
@@ -295,6 +306,7 @@ public class App {
 
         System.out.println("Participação de " + usuario.nome + " removida do evento " + eventoSelecionado.nome + ".");
     }
+
     private static void listarEventosEmAndamento(List<Evento> eventos) {
         if (eventos.isEmpty()) {
             System.out.println("Nenhum evento cadastrado.");
@@ -321,6 +333,7 @@ public class App {
             System.out.println("Nenhum evento em andamento agora.");
         }
     }
+
     private static void listarEventosPassados(List<Evento> eventos) {
         if (eventos.isEmpty()) {
             System.out.println("Nenhum evento cadastrado.");
@@ -344,6 +357,52 @@ public class App {
         }
     }
 
+    private static void salvarEventosEmArquivo(List<Evento> eventos) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("events.data"))) {
+            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+            for (Evento e : eventos) {
+                String linha = e.nome + ";" +
+                        e.endereco + ";" +
+                        e.descricao + ";" +
+                        e.tipo + ";" +
+                        e.horario.format(formato);
+                writer.write(linha);
+                writer.newLine();
+            }
+
+            System.out.println("[✓] Eventos salvos no arquivo events.data com sucesso.");
+
+        } catch (IOException ex) {
+            System.out.println("Erro ao salvar eventos: " + ex.getMessage());
+        }
+    }
+    private static List<Evento> carregarEventosDoArquivo() {
+        List<Evento> eventos = new ArrayList<>();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader("events.data"))) {
+            String linha;
+            while ((linha = reader.readLine()) != null) {
+                String[] partes = linha.split(";");
+                if (partes.length == 5) {
+                    Evento evento = new Evento();
+                    evento.nome = partes[0];
+                    evento.endereco = partes[1];
+                    evento.descricao = partes[2];
+                    evento.tipo = TipoEvento.valueOf(partes[3]);
+                    evento.horario = LocalDateTime.parse(partes[4], formato);
+                    eventos.add(evento);
+                }
+            }
+            System.out.println("[✓] Eventos carregados do arquivo events.data.");
+        } catch (IOException e) {
+            System.out.println("Arquivo events.data não encontrado ou falha na leitura. Nenhum evento carregado.");
+        }
+
+        return eventos;
+    }
 }
+
 
 
