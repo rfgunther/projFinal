@@ -3,7 +3,6 @@
  */
 package br.unisul.agenda;
 
-
 import br.unisul.agenda.model.Usuario;
 import br.unisul.agenda.model.Evento;
 import br.unisul.agenda.model.TipoEvento;
@@ -13,9 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
-
-
-
 
 public class App {
     public static void main(String[] args) {
@@ -34,9 +30,7 @@ public class App {
             System.out.println("4 - Confirmar participação em evento");
             System.out.println("5 - Sair");
 
-
             System.out.print("Escolha uma opção: ");
-
             int opcao = Integer.parseInt(sc.nextLine());
 
             switch (opcao) {
@@ -58,12 +52,12 @@ public class App {
                     break;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
-
             }
         }
 
         sc.close();
     }
+
     private static void cadastrarUsuario(Scanner sc, List<Usuario> usuarios) {
         Usuario usuario = new Usuario();
 
@@ -79,23 +73,24 @@ public class App {
         System.out.print("Digite o endereço: ");
         usuario.endereco = sc.nextLine();
 
-        System.out.println("\nUsuário cadastrado:");
+        usuarios.add(usuario);
+
+        System.out.println("\nUsuário cadastrado com sucesso!");
         System.out.println("Nome: " + usuario.nome);
         System.out.println("Email: " + usuario.email);
         System.out.println("Telefone: " + usuario.telefone);
         System.out.println("Endereço: " + usuario.endereco);
-
-        usuarios.add(usuario);
-
-        System.out.println("Usuário cadastrado com sucesso!");
     }
 
     private static void cadastrarEvento(Scanner sc, List<Evento> eventos) {
         Evento evento = new Evento();
+
         System.out.print("Digite o nome do evento: ");
         evento.nome = sc.nextLine();
+
         System.out.print("Digite o endereço do evento: ");
         evento.endereco = sc.nextLine();
+
         System.out.print("Digite a descrição: ");
         evento.descricao = sc.nextLine();
 
@@ -103,6 +98,7 @@ public class App {
         for (TipoEvento tipo : TipoEvento.values()) {
             System.out.println("- " + tipo);
         }
+
         evento.tipo = TipoEvento.valueOf(sc.nextLine().toUpperCase());
 
         System.out.print("Digite a data e hora do evento (formato: dd/MM/yyyy HH:mm): ");
@@ -127,10 +123,11 @@ public class App {
                 System.out.println("Descrição: " + e.descricao);
                 System.out.println("Tipo: " + e.tipo);
                 System.out.println("Horário: " + e.horario);
-
+                System.out.println("Participantes confirmados: " + e.participantes.size());
             }
         }
     }
+
     private static void confirmarParticipacao(Scanner sc, List<Usuario> usuarios, List<Evento> eventos) {
         if (usuarios.isEmpty()) {
             System.out.println("Nenhum usuário cadastrado.");
@@ -147,8 +144,14 @@ public class App {
             System.out.println(i + " - " + usuarios.get(i).nome);
         }
 
-        System.out.print("Escolha o número do usuário: ");
+        System.out.print("Usuário (número): ");
         int indiceUsuario = Integer.parseInt(sc.nextLine());
+
+        if (indiceUsuario < 0 || indiceUsuario >= usuarios.size()) {
+            System.out.println("Usuário inválido.");
+            return;
+        }
+
         Usuario usuarioSelecionado = usuarios.get(indiceUsuario);
 
         System.out.println("\n=== Eventos Disponíveis ===");
@@ -156,14 +159,22 @@ public class App {
             System.out.println(i + " - " + eventos.get(i).nome + " em " + eventos.get(i).horario);
         }
 
-        System.out.print("Escolha o número do evento: ");
+        System.out.print("Evento (número): ");
         int indiceEvento = Integer.parseInt(sc.nextLine());
+
+        if (indiceEvento < 0 || indiceEvento >= eventos.size()) {
+            System.out.println("Evento inválido.");
+            return;
+        }
+
         Evento eventoSelecionado = eventos.get(indiceEvento);
 
-        // Adiciona o usuário à lista de participantes do evento
-        eventoSelecionado.participantes.add(usuarioSelecionado);
+        if (eventoSelecionado.participantes.contains(usuarioSelecionado)) {
+            System.out.println("Este usuário já está confirmado nesse evento.");
+            return;
+        }
 
+        eventoSelecionado.participantes.add(usuarioSelecionado);
         System.out.println(usuarioSelecionado.nome + " foi confirmado(a) no evento " + eventoSelecionado.nome + "!");
     }
-
 }
