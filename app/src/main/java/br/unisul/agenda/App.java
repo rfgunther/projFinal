@@ -7,13 +7,57 @@ package br.unisul.agenda;
 import br.unisul.agenda.model.Usuario;
 import br.unisul.agenda.model.Evento;
 import br.unisul.agenda.model.TipoEvento;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
+
+
 
 public class App {
     public static void main(String[] args) {
+
         Scanner sc = new Scanner(System.in);
+        List<Usuario> usuarios = new ArrayList<>();
+        List<Evento> eventos = new ArrayList<>();
+
+        boolean running = true;
+
+        while (running) {
+            System.out.println("\n=== Menu Principal ===");
+            System.out.println("1 - Cadastrar novo usuário");
+            System.out.println("2 - Cadastrar novo evento");
+            System.out.println("3 - Listar eventos cadastrados");
+            System.out.println("4 - Sair");
+            System.out.print("Escolha uma opção: ");
+
+            int opcao = Integer.parseInt(sc.nextLine());
+
+            switch (opcao) {
+                case 1:
+                    cadastrarUsuario(sc, usuarios);
+                    break;
+                case 2:
+                    cadastrarEvento(sc, eventos);
+                    break;
+                case 3:
+                    listarEventos(eventos);
+                    break;
+                case 4:
+                    running = false;
+                    System.out.println("Encerrando o sistema. Até logo!");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        }
+
+        sc.close();
+    }
+    private static void cadastrarUsuario(Scanner sc, List<Usuario> usuarios) {
         Usuario usuario = new Usuario();
 
         System.out.print("Digite o nome: ");
@@ -34,38 +78,50 @@ public class App {
         System.out.println("Telefone: " + usuario.telefone);
         System.out.println("Endereço: " + usuario.endereco);
 
-        Evento evento = new Evento();
+        usuarios.add(usuario);
 
+        System.out.println("Usuário cadastrado com sucesso!");
+    }
+
+    private static void cadastrarEvento(Scanner sc, List<Evento> eventos) {
+        Evento evento = new Evento();
         System.out.print("Digite o nome do evento: ");
         evento.nome = sc.nextLine();
-
         System.out.print("Digite o endereço do evento: ");
         evento.endereco = sc.nextLine();
-
         System.out.print("Digite a descrição: ");
         evento.descricao = sc.nextLine();
 
-// Listar opções de categoria (enum)
         System.out.println("Escolha o tipo de evento:");
         for (TipoEvento tipo : TipoEvento.values()) {
             System.out.println("- " + tipo);
         }
         evento.tipo = TipoEvento.valueOf(sc.nextLine().toUpperCase());
 
-// Ler data e hora
         System.out.print("Digite a data e hora do evento (formato: dd/MM/yyyy HH:mm): ");
         String dataHora = sc.nextLine();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         evento.horario = LocalDateTime.parse(dataHora, formato);
 
-        System.out.println("\nEvento cadastrado:");
-        System.out.println("Nome: " + evento.nome);
-        System.out.println("Endereço: " + evento.endereco);
-        System.out.println("Descrição: " + evento.descricao);
-        System.out.println("Tipo: " + evento.tipo);
-        System.out.println("Horário: " + evento.horario);
+        eventos.add(evento);
 
+        System.out.println("Evento cadastrado com sucesso!");
+    }
 
-        sc.close();
+    private static void listarEventos(List<Evento> eventos) {
+        if (eventos.isEmpty()) {
+            System.out.println("Nenhum evento cadastrado.");
+        } else {
+            System.out.println("\n=== Eventos Cadastrados ===");
+            for (Evento e : eventos) {
+                System.out.println("-------------------------");
+                System.out.println("Nome: " + e.nome);
+                System.out.println("Endereço: " + e.endereco);
+                System.out.println("Descrição: " + e.descricao);
+                System.out.println("Tipo: " + e.tipo);
+                System.out.println("Horário: " + e.horario);
+
+            }
+        }
     }
 }
